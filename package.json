@@ -100,7 +100,6 @@
     "tailwindcss-animate": "^1.0.7",
     "tiptap-markdown": "^0.9.0",
     "use-debounce": "10.0.6",
-    "vite-plugin-insert-html": "^1.0.3",
     "zitejs": "0.9.148",
     "zod": "3.24.2"
   },
