@@ -25,6 +25,6 @@ jobs:
           if ! git diff --quiet -- package-lock.json; then
             git add package-lock.json
             git commit -m "chore: refresh npm lockfile"
-            git push
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
           fi
       - run: npm run build
