@@ -2,7 +2,6 @@ import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { ziteId } from 'zitejs/vite-plugin';
-import { insertHtml, h } from 'vite-plugin-insert-html';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
@@ -80,15 +79,19 @@ export default defineConfig(({ command }) => ({
   },
   plugins: [
     react(),
-    insertHtml({
-      headPrepend: [
-        h('script', {
-          src:
-            process.env.VITE_APP_RUNTIME_URL ||
-            'https://zite.com/app-runtime.js',
-        }),
-      ],
-    }),
+    {
+      name: 'zite-runtime-injection',
+      transformIndexHtml: {
+        order: 'pre',
+        handler() {
+          return [{
+            tag: 'script',
+            attrs: { src: process.env.VITE_APP_RUNTIME_URL || 'https://zite.com/app-runtime.js' },
+            injectTo: 'head-prepend',
+          }];
+        },
+      },
+    },
     ziteId(),
   ],
   resolve: {
