@@ -6,6 +6,9 @@ on:
 permissions:
   contents: write
 concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
@@ -13,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
@@ -25,6 +30,8 @@ jobs:
           if ! git diff --quiet -- package-lock.json; then
             git add package-lock.json
             git commit -m "chore: refresh npm lockfile"
+            git fetch origin ${{ github.event.pull_request.head.ref }}
+            git rebase origin/${{ github.event.pull_request.head.ref }}
             git push origin HEAD:${{ github.event.pull_request.head.ref }}
           fi
       - run: npm run build
